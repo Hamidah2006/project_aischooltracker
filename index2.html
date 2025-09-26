@@ -1,0 +1,1204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Homework Tracker</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --success: #4cc9f0;
+            --warning: #f72585;
+            --danger: #e63946;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+            --border: #dee2e6;
+            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fb;
+            color: var(--dark);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            padding: 25px 0;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            transform: rotate(30deg);
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            position: relative;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 700px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: var(--card-shadow);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-title i {
+            color: var(--primary);
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .stat-item {
+            padding: 15px;
+            min-width: 120px;
+        }
+
+        .stat-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.95rem;
+            color: var(--gray);
+        }
+
+        .needs-help {
+            color: var(--danger);
+            font-weight: 700;
+        }
+
+        .doing-well {
+            color: #2a9d8f;
+            font-weight: 700;
+        }
+
+        .monitoring {
+            color: var(--warning);
+            font-weight: 700;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            padding: 14px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: var(--dark);
+            position: sticky;
+            top: 0;
+        }
+
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .status {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            display: inline-block;
+        }
+
+        .status-completed {
+            background-color: #e8f7ef;
+            color: #2a9d8f;
+        }
+
+        .status-pending {
+            background-color: #fef9e7;
+            color: #e9c46a;
+        }
+
+        .status-late {
+            background-color: #fdeded;
+            color: var(--danger);
+        }
+
+        .prediction {
+            display: flex;
+            align-items: center;
+        }
+
+        .prediction-icon {
+            width: 30px;
+            height: 30px;
+            margin-right: 12px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .help-needed {
+            background-color: var(--danger);
+        }
+
+        .monitoring-status {
+            background-color: var(--warning);
+        }
+
+        .good-standing {
+            background-color: #2a9d8f;
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            margin-right: 8px;
+        }
+
+        .legend-help { background-color: var(--danger); }
+        .legend-monitor { background-color: var(--warning); }
+        .legend-good { background-color: #2a9d8f; }
+
+        .progress-container {
+            height: 10px;
+            background-color: var(--light-gray);
+            border-radius: 5px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            border-radius: 5px;
+        }
+
+        .progress-high { width: 90%; background: linear-gradient(to right, #2a9d8f, #4cc9f0); }
+        .progress-medium { width: 65%; background: linear-gradient(to right, #e9c46a, #f4a261); }
+        .progress-low { width: 30%; background: linear-gradient(to right, var(--danger), #f72585); }
+
+        .chart-container {
+            height: 250px;
+            margin-top: 20px;
+            position: relative;
+        }
+
+        .chart-bar {
+            position: absolute;
+            bottom: 0;
+            width: 40px;
+            background: linear-gradient(to top, var(--primary), var(--secondary));
+            border-radius: 5px 5px 0 0;
+            text-align: center;
+            color: white;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding: 5px;
+            transition: height 0.5s ease;
+        }
+
+        .chart-label {
+            position: absolute;
+            bottom: -25px;
+            width: 100%;
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+
+        .filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            background: var(--light);
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn.active, .filter-btn:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .search-box {
+            flex: 1;
+            max-width: 300px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px 15px 10px 40px;
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            font-size: 1rem;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+        }
+
+        .action-btn {
+            padding: 8px 16px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.3s ease;
+        }
+
+        .action-btn:hover {
+            background: var(--secondary);
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            background: white;
+            border-left: 5px solid var(--primary);
+            border-radius: 5px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transform: translateX(120%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 25px;
+            color: var(--gray);
+            font-size: 0.95rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .trend-indicator {
+            display: inline-flex;
+            align-items: center;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .trend-up {
+            color: #2a9d8f;
+        }
+
+        .trend-down {
+            color: var(--danger);
+        }
+
+        .trend-neutral {
+            color: var(--gray);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .btn-secondary {
+            background: var(--light);
+            color: var(--dark);
+        }
+
+        .btn-secondary:hover {
+            background: var(--light-gray);
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top: 4px solid var(--primary);
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .filters {
+                flex-direction: column;
+            }
+            
+            .search-box {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-graduation-cap"></i> Smart Homework Tracker</h1>
+            <p class="subtitle">AI-powered system to monitor student progress and predict who needs academic support</p>
+        </header>
+
+        <div class="filters">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Search students...">
+            </div>
+            <button class="filter-btn active" data-filter="all">All Students</button>
+            <button class="filter-btn" data-filter="help">Needs Help</button>
+            <button class="filter-btn" data-filter="monitoring">Monitoring</button>
+            <button class="filter-btn" data-filter="well">Doing Well</button>
+            <button class="action-btn" id="addStudentBtn">
+                <i class="fas fa-plus"></i> Add Student
+            </button>
+        </div>
+
+        <div class="dashboard">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title"><i class="fas fa-chart-line"></i> Class Overview</h2>
+                </div>
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="totalStudents">0</div>
+                        <div class="stat-label">Total Students</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="avgCompletion">0%</div>
+                        <div class="stat-label">Avg Completion</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value needs-help" id="needHelpCount">0</div>
+                        <div class="stat-label">Need Help</div>
+                    </div>
+                </div>
+                
+                <div class="chart-container" id="subjectChart">
+                    <!-- Chart will be generated by JS -->
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title"><i class="fas fa-user-graduate"></i> Student Performance</h2>
+                </div>
+                <div class="loading" id="studentLoading">
+                    <div class="spinner"></div>
+                    <p>Loading student data...</p>
+                </div>
+                <table id="studentTable">
+                    <thead>
+                        <tr>
+                            <th>Student</th>
+                            <th>Completion</th>
+                            <th>Trend</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentTableBody">
+                        <!-- Student data will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title"><i class="fas fa-exclamation-triangle"></i> Help Prediction</h2>
+                </div>
+                <div class="loading" id="predictionLoading">
+                    <div class="spinner"></div>
+                    <p>Analyzing student data...</p>
+                </div>
+                <table id="predictionTable">
+                    <thead>
+                        <tr>
+                            <th>Student</th>
+                            <th>Prediction</th>
+                            <th>Risk Level</th>
+                        </tr>
+                    </thead>
+                    <tbody id="predictionTableBody">
+                        <!-- Prediction data will be populated here -->
+                    </tbody>
+                </table>
+
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color legend-help"></div>
+                        <span>Needs Help</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color legend-monitor"></div>
+                        <span>Monitor Closely</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color legend-good"></div>
+                        <span>Good Standing</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title"><i class="fas fa-tasks"></i> Recent Homework Assignments</h2>
+                <button class="action-btn" id="addAssignmentBtn">
+                    <i class="fas fa-plus"></i> New Assignment
+                </button>
+            </div>
+            <div class="loading" id="assignmentLoading">
+                <div class="spinner"></div>
+                <p>Loading assignments...</p>
+            </div>
+            <table id="assignmentTable">
+                <thead>
+                    <tr>
+                        <th>Assignment</th>
+                        <th>Subject</th>
+                        <th>Due Date</th>
+                        <th>Completion</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="assignmentTableBody">
+                    <!-- Assignment data will be populated here -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="notification" id="notification">
+            <p><i class="fas fa-bell"></i> <span id="notificationText">New alert: 3 students need immediate attention!</span></p>
+        </div>
+
+        <!-- Add Student Modal -->
+        <div class="modal" id="studentModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Add New Student</h2>
+                    <button class="close-btn" id="closeStudentModal">&times;</button>
+                </div>
+                <form id="studentForm">
+                    <div class="form-group">
+                        <label for="studentName">Student Name</label>
+                        <input type="text" id="studentName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="studentEmail">Email</label>
+                        <input type="email" id="studentEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="studentGrade">Grade Level</label>
+                        <select id="studentGrade" required>
+                            <option value="">Select Grade</option>
+                            <option value="9">9th Grade</option>
+                            <option value="10">10th Grade</option>
+                            <option value="11">11th Grade</option>
+                            <option value="12">12th Grade</option>
+                        </select>
+                    </div>
+                    <div class="btn-group">
+                        <button type="button" class="action-btn btn-secondary" id="cancelStudentBtn">Cancel</button>
+                        <button type="submit" class="action-btn">Add Student</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Add Assignment Modal -->
+        <div class="modal" id="assignmentModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Add New Assignment</h2>
+                    <button class="close-btn" id="closeAssignmentModal">&times;</button>
+                </div>
+                <form id="assignmentForm">
+                    <div class="form-group">
+                        <label for="assignmentName">Assignment Name</label>
+                        <input type="text" id="assignmentName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="assignmentSubject">Subject</label>
+                        <select id="assignmentSubject" required>
+                            <option value="">Select Subject</option>
+                            <option value="Mathematics">Mathematics</option>
+                            <option value="Science">Science</option>
+                            <option value="History">History</option>
+                            <option value="English">English</option>
+                            <option value="Art">Art</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="assignmentDueDate">Due Date</label>
+                        <input type="date" id="assignmentDueDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="assignmentDescription">Description</label>
+                        <textarea id="assignmentDescription" rows="3"></textarea>
+                    </div>
+                    <div class="btn-group">
+                        <button type="button" class="action-btn btn-secondary" id="cancelAssignmentBtn">Cancel</button>
+                        <button type="submit" class="action-btn">Add Assignment</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <footer>
+            <p>Smart Homework Tracker v2.0 | AI-powered predictive analytics for student success</p>
+            <p>Predictions based on completion rates, submission patterns, and historical performance data</p>
+        </footer>
+    </div>
+
+    <script>
+        // Simulated backend data storage
+        const BACKEND_KEY = 'homeworkTrackerData';
+        
+        // Initialize data
+        function initializeData() {
+            const existingData = localStorage.getItem(BACKEND_KEY);
+            if (existingData) {
+                return JSON.parse(existingData);
+            }
+            
+            // Default data
+            const defaultData = {
+                students: [
+                    { id: 1, name: "Emma Johnson", email: "emma@example.com", grade: 10, completionRate: 92, trend: 5, status: "doing-well" },
+                    { id: 2, name: "Noah Williams", email: "noah@example.com", grade: 11, completionRate: 65, trend: 0, status: "monitoring" },
+                    { id: 3, name: "Olivia Brown", email: "olivia@example.com", grade: 9, completionRate: 30, trend: -12, status: "needs-help" },
+                    { id: 4, name: "Liam Jones", email: "liam@example.com", grade: 12, completionRate: 88, trend: 3, status: "doing-well" },
+                    { id: 5, name: "Ava Garcia", email: "ava@example.com", grade: 10, completionRate: 45, trend: -8, status: "needs-help" },
+                    { id: 6, name: "Mason Miller", email: "mason@example.com", grade: 11, completionRate: 70, trend: -2, status: "monitoring" },
+                    { id: 7, name: "Sophia Davis", email: "sophia@example.com", grade: 9, completionRate: 55, trend: -5, status: "monitoring" },
+                    { id: 8, name: "Lucas Rodriguez", email: "lucas@example.com", grade: 12, completionRate: 35, trend: -10, status: "needs-help" }
+                ],
+                assignments: [
+                    { id: 1, name: "Math Chapter 5 Exercises", subject: "Mathematics", dueDate: "2023-10-15", totalStudents: 28, completed: 25, status: "completed" },
+                    { id: 2, name: "Science Lab Report", subject: "Science", dueDate: "2023-10-18", totalStudents: 28, completed: 20, status: "pending" },
+                    { id: 3, name: "History Essay", subject: "History", dueDate: "2023-10-20", totalStudents: 28, completed: 12, status: "late" },
+                    { id: 4, name: "English Literature Analysis", subject: "English", dueDate: "2023-10-22", totalStudents: 28, completed: 8, status: "late" }
+                ],
+                subjects: [
+                    { name: "Mathematics", completion: 70 },
+                    { name: "Science", completion: 85 },
+                    { name: "History", completion: 60 },
+                    { name: "English", completion: 90 },
+                    { name: "Art", completion: 75 }
+                ]
+            };
+            
+            localStorage.setItem(BACKEND_KEY, JSON.stringify(defaultData));
+            return defaultData;
+        }
+        
+        // Save data to localStorage
+        function saveData(data) {
+            localStorage.setItem(BACKEND_KEY, JSON.stringify(data));
+        }
+        
+        // Load data from localStorage
+        function loadData() {
+            const data = localStorage.getItem(BACKEND_KEY);
+            return data ? JSON.parse(data) : initializeData();
+        }
+        
+        // Simulate API delay
+        function simulateAPIDelay() {
+            return new Promise(resolve => setTimeout(resolve, 800));
+        }
+        
+        // Render student table
+        function renderStudentTable(students) {
+            const tbody = document.getElementById('studentTableBody');
+            tbody.innerHTML = '';
+            
+            students.forEach(student => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${student.name}</td>
+                    <td>
+                        <div>${student.completionRate}%</div>
+                        <div class="progress-container">
+                            <div class="progress-bar ${getProgressClass(student.completionRate)}"></div>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="trend-indicator ${getTrendClass(student.trend)}">
+                            <i class="fas ${getTrendIcon(student.trend)}"></i> ${Math.abs(student.trend)}%
+                        </span>
+                    </td>
+                    <td class="${getStatusClass(student.status)}">${getStatusText(student.status)}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+        
+        // Render prediction table
+        function renderPredictionTable(students) {
+            const tbody = document.getElementById('predictionTableBody');
+            tbody.innerHTML = '';
+            
+            // Filter students who need help or monitoring
+            const atRiskStudents = students.filter(student => 
+                student.status === 'needs-help' || student.status === 'monitoring'
+            );
+            
+            atRiskStudents.forEach(student => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${student.name}</td>
+                    <td>
+                        <div class="prediction">
+                            <div class="prediction-icon ${getPredictionIconClass(student.status)}">${getPredictionIcon(student.status)}</div>
+                            <span>${getPredictionText(student.status)}</span>
+                        </div>
+                    </td>
+                    <td class="${getRiskClass(student.status)}">${getRiskText(student.status)}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+        
+        // Render assignment table
+        function renderAssignmentTable(assignments) {
+            const tbody = document.getElementById('assignmentTableBody');
+            tbody.innerHTML = '';
+            
+            assignments.forEach(assignment => {
+                const completionPercent = Math.round((assignment.completed / assignment.totalStudents) * 100);
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${assignment.name}</td>
+                    <td>${assignment.subject}</td>
+                    <td>${formatDate(assignment.dueDate)}</td>
+                    <td>${assignment.completed}/${assignment.totalStudents} (${completionPercent}%)</td>
+                    <td><span class="status status-${assignment.status}">${getStatusText(assignment.status)}</span></td>
+                    <td>
+                        <button class="action-btn" style="padding: 5px 10px; font-size: 0.9rem;" data-id="${assignment.id}">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+        
+        // Render subject chart
+        function renderSubjectChart(subjects) {
+            const container = document.getElementById('subjectChart');
+            container.innerHTML = '';
+            
+            const barWidth = 40;
+            const spacing = 30;
+            const maxCompletion = Math.max(...subjects.map(s => s.completion));
+            
+            subjects.forEach((subject, index) => {
+                const barHeight = (subject.completion / maxCompletion) * 200;
+                const leftPosition = index * (barWidth + spacing) + 20;
+                
+                const bar = document.createElement('div');
+                bar.className = 'chart-bar';
+                bar.style.height = `${barHeight}px`;
+                bar.style.left = `${leftPosition}px`;
+                bar.innerHTML = `${subject.completion}%<div class="chart-label">${subject.name}</div>`;
+                
+                container.appendChild(bar);
+            });
+        }
+        
+        // Update statistics
+        function updateStatistics(data) {
+            const totalStudents = data.students.length;
+            const avgCompletion = Math.round(data.students.reduce((sum, student) => sum + student.completionRate, 0) / totalStudents);
+            const needHelpCount = data.students.filter(s => s.status === 'needs-help').length;
+            
+            document.getElementById('totalStudents').textContent = totalStudents;
+            document.getElementById('avgCompletion').textContent = `${avgCompletion}%`;
+            document.getElementById('needHelpCount').textContent = needHelpCount;
+        }
+        
+        // Helper functions
+        function getProgressClass(completionRate) {
+            if (completionRate >= 80) return 'progress-high';
+            if (completionRate >= 50) return 'progress-medium';
+            return 'progress-low';
+        }
+        
+        function getTrendClass(trend) {
+            if (trend > 0) return 'trend-up';
+            if (trend < 0) return 'trend-down';
+            return 'trend-neutral';
+        }
+        
+        function getTrendIcon(trend) {
+            if (trend > 0) return 'fa-arrow-up';
+            if (trend < 0) return 'fa-arrow-down';
+            return 'fa-minus';
+        }
+        
+        function getStatusClass(status) {
+            switch(status) {
+                case 'doing-well': return 'doing-well';
+                case 'monitoring': return 'monitoring';
+                case 'needs-help': return 'needs-help';
+                default: return '';
+            }
+        }
+        
+        function getStatusText(status) {
+            switch(status) {
+                case 'doing-well': return 'Doing Well';
+                case 'monitoring': return 'Monitoring';
+                case 'needs-help': return 'Needs Help';
+                case 'completed': return 'Completed';
+                case 'pending': return 'In Progress';
+                case 'late': return 'Late Submissions';
+                default: return status;
+            }
+        }
+        
+        function getPredictionIconClass(status) {
+            switch(status) {
+                case 'needs-help': return 'help-needed';
+                case 'monitoring': return 'monitoring-status';
+                default: return 'good-standing';
+            }
+        }
+        
+        function getPredictionIcon(status) {
+            switch(status) {
+                case 'needs-help': return '!';
+                case 'monitoring': return '?';
+                default: return '+';
+            }
+        }
+        
+        function getPredictionText(status) {
+            switch(status) {
+                case 'needs-help': return 'High risk of falling behind';
+                case 'monitoring': return 'Monitor progress closely';
+                default: return 'On track for success';
+            }
+        }
+        
+        function getRiskClass(status) {
+            switch(status) {
+                case 'needs-help': return 'needs-help';
+                case 'monitoring': return 'monitoring';
+                default: return 'doing-well';
+            }
+        }
+        
+        function getRiskText(status) {
+            switch(status) {
+                case 'needs-help': return 'High';
+                case 'monitoring': return 'Moderate';
+                default: return 'Low';
+            }
+        }
+        
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'short', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString(undefined, options);
+        }
+        
+        // Filter students
+        function filterStudents(students, filter) {
+            switch(filter) {
+                case 'help':
+                    return students.filter(s => s.status === 'needs-help');
+                case 'monitoring':
+                    return students.filter(s => s.status === 'monitoring');
+                case 'well':
+                    return students.filter(s => s.status === 'doing-well');
+                default:
+                    return students;
+            }
+        }
+        
+        // Search students
+        function searchStudents(students, searchTerm) {
+            if (!searchTerm) return students;
+            return students.filter(student => 
+                student.name.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+        }
+        
+        // Show notification
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            const notificationText = document.getElementById('notificationText');
+            notificationText.textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 5000);
+        }
+        
+        // Show loading indicators
+        function showLoading() {
+            document.getElementById('studentLoading').style.display = 'block';
+            document.getElementById('predictionLoading').style.display = 'block';
+            document.getElementById('assignmentLoading').style.display = 'block';
+        }
+        
+        // Hide loading indicators
+        function hideLoading() {
+            document.getElementById('studentLoading').style.display = 'none';
+            document.getElementById('predictionLoading').style.display = 'none';
+            document.getElementById('assignmentLoading').style.display = 'none';
+        }
+        
+        // Initialize the application
+        async function initApp() {
+            showLoading();
+            
+            // Simulate API delay
+            await simulateAPIDelay();
+            
+            // Load data
+            const data = loadData();
+            
+            // Render components
+            renderStudentTable(data.students);
+            renderPredictionTable(data.students);
+            renderAssignmentTable(data.assignments);
+            renderSubjectChart(data.subjects);
+            updateStatistics(data);
+            
+            hideLoading();
+            
+            // Show initial notification
+            showNotification(`Welcome back! ${data.students.filter(s => s.status === 'needs-help').length} students need immediate attention.`);
+        }
+        
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize the app
+            initApp();
+            
+            // Filter buttons
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    const filter = this.getAttribute('data-filter');
+                    const data = loadData();
+                    const filteredStudents = filterStudents(data.students, filter);
+                    renderStudentTable(filteredStudents);
+                });
+            });
+            
+            // Search functionality
+            const searchInput = document.getElementById('searchInput');
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value;
+                const data = loadData();
+                const filteredStudents = searchStudents(data.students, searchTerm);
+                renderStudentTable(filteredStudents);
+            });
+            
+            // Add student modal
+            const studentModal = document.getElementById('studentModal');
+            const addStudentBtn = document.getElementById('addStudentBtn');
+            const closeStudentModal = document.getElementById('closeStudentModal');
+            const cancelStudentBtn = document.getElementById('cancelStudentBtn');
+            const studentForm = document.getElementById('studentForm');
+            
+            addStudentBtn.addEventListener('click', () => {
+                studentModal.style.display = 'flex';
+            });
+            
+            closeStudentModal.addEventListener('click', () => {
+                studentModal.style.display = 'none';
+            });
+            
+            cancelStudentBtn.addEventListener('click', () => {
+                studentModal.style.display = 'none';
+            });
+            
+            studentForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const data = loadData();
+                const newStudent = {
+                    id: data.students.length + 1,
+                    name: document.getElementById('studentName').value,
+                    email: document.getElementById('studentEmail').value,
+                    grade: parseInt(document.getElementById('studentGrade').value),
+                    completionRate: Math.floor(Math.random() * 40) + 30, // Random between 30-70
+                    trend: Math.floor(Math.random() * 20) - 10, // Random between -10 to 10
+                    status: 'monitoring' // Default status
+                };
+                
+                data.students.push(newStudent);
+                saveData(data);
+                
+                // Re-render tables
+                renderStudentTable(data.students);
+                renderPredictionTable(data.students);
+                updateStatistics(data);
+                
+                // Close modal and reset form
+                studentModal.style.display = 'none';
+                studentForm.reset();
+                
+                showNotification(`Student ${newStudent.name} added successfully!`);
+            });
+            
+            // Add assignment modal
+            const assignmentModal = document.getElementById('assignmentModal');
+            const addAssignmentBtn = document.getElementById('addAssignmentBtn');
+            const closeAssignmentModal = document.getElementById('closeAssignmentModal');
+            const cancelAssignmentBtn = document.getElementById('cancelAssignmentBtn');
+            const assignmentForm = document.getElementById('assignmentForm');
+            
+            addAssignmentBtn.addEventListener('click', () => {
+                assignmentModal.style.display = 'flex';
+            });
+            
+            closeAssignmentModal.addEventListener('click', () => {
+                assignmentModal.style.display = 'none';
+            });
+            
+            cancelAssignmentBtn.addEventListener('click', () => {
+                assignmentModal.style.display = 'none';
+            });
+            
+            assignmentForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const data = loadData();
+                const newAssignment = {
+                    id: data.assignments.length + 1,
+                    name: document.getElementById('assignmentName').value,
+                    subject: document.getElementById('assignmentSubject').value,
+                    dueDate: document.getElementById('assignmentDueDate').value,
+                    totalStudents: 28, // Fixed for demo
+                    completed: Math.floor(Math.random() * 20) + 5, // Random between 5-25
+                    status: 'pending' // Default status
+                };
+                
+                data.assignments.push(newAssignment);
+                saveData(data);
+                
+                // Re-render table
+                renderAssignmentTable(data.assignments);
+                
+                // Close modal and reset form
+                assignmentModal.style.display = 'none';
+                assignmentForm.reset();
+                
+                showNotification(`Assignment "${newAssignment.name}" added successfully!`);
+            });
+            
+            // Close modals when clicking outside
+            window.addEventListener('click', function(e) {
+                if (e.target === studentModal) {
+                    studentModal.style.display = 'none';
+                }
+                if (e.target === assignmentModal) {
+                    assignmentModal.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
